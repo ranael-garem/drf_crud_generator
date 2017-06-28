@@ -2,7 +2,7 @@
 import os
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.template import Context, Template
 
 from ..utils import get_file_name, get_instance_name
@@ -22,6 +22,8 @@ class Command(BaseCommand):
     def handle(self, model, app_name, *args, **options):
         self.model_name = model
         self.app_name = app_name
+
+        self.validate_model_name(model)
 
         app_template = os.path.join(
             settings.BASE_DIR, 'generator', 'management', 'templates')
@@ -72,4 +74,11 @@ class Command(BaseCommand):
         init.close()
 
     def validate_model_name(self, name):
-        return True
+        """
+        Check that the model name does not start with '_'
+        https://docs.djangoproject.com/en/1.11/ref/checks/#models
+        """
+        if name.startswith('_') or name.endswith('_'):
+            raise CommandError("The model name %s cannot start or end with an "
+                               "underscore as it collides with the query lookup syntax"
+                               % (name))
