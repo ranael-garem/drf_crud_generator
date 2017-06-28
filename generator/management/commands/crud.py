@@ -2,7 +2,6 @@
 import os
 
 from importlib import import_module
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.template import Context, Template
 
@@ -15,6 +14,7 @@ class Command(BaseCommand):
     help = ''
     model_name = ''
     app_name = ''
+
 
     def add_arguments(self, parser):
         parser.add_argument('model')
@@ -33,37 +33,35 @@ class Command(BaseCommand):
         self.model_name = model
         self.app_name = app_name
 
-        app_template = os.path.join(
-            settings.BASE_DIR, 'generator', 'management', 'templates')
-        app_directory = os.path.join(settings.BASE_DIR, self.app_name)
-
         context = {
             'name': self.model_name,
             'author': options['author']
         }
 
-        self.create_instance(app_template, app_directory, 'model', context)
-        self.create_instance(app_template, app_directory,
-                             'serializer', context)
-        self.create_instance(app_template, app_directory, 'view', context)
+        self.create_instance('model', context)
+        self.create_instance('serializer', context)
+        self.create_instance('view', context)
 
         self.stdout.write(self.style.SUCCESS('Successfully called command'))
 
-    def create_instance(self, app_template, app_directory, instance_type, context):
+    def create_instance(self, instance_type, context):
         """ Creates an instance (model, serializer or view) """
+        import generator
+        crud_template_dir = os.path.join(generator.__path__[0], 'management', 'templates')
+        app_directory = os.path.join(os.getcwd(), self.app_name)
+
         model_name = self.model_name
         dir_name = '%ss' % (instance_type)
-        path_old = os.path.join(app_template, '%s.py.tmpl' % (instance_type))
+        path_old = os.path.join(crud_template_dir, '%s.py.tmpl' % (instance_type))
         path_new = os.path.join(
             app_directory, dir_name, get_file_name(instance_type, model_name) + '.py')
+
         self.create_file(path_new, path_old, context)
         self.initialize_instance(os.path.join(
             app_directory, dir_name), instance_type)
 
     def create_file(self, path_new, path_old, context):
         """ Creates a new file from path_old to path_new """
-        if path_new.endswith('.tmpl'):
-            path_new = path_new[:-5]
         fp_old = open(path_old, 'r')
         fp_new = open(path_new, 'w')
         fp_new.write(Template(fp_old.read()).render(Context(context)))
