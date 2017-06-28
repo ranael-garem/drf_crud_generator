@@ -1,0 +1,14 @@
+from rest_framework import serializers
+from ..models import {{ name }}
+
+
+class {{name}}Serializer(serializers.ModelSerializer):
+    """
+    Serializer for model {{ name }}.
+
+    Author: {{ author }}
+    """
+
+    class Meta:
+        model = {{ name }}
+        fields = ['__all__', ]

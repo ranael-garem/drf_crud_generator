@@ -4,3 +4,4 @@ htmlcov/
 *.pyc
 .coverage
 db.sqlite3
+main/migrations
