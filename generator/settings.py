@@ -123,3 +123,4 @@ STATIC_URL = '/static/'
 
 TEST_APP = 'main'
 TEST_MODEL = 'Book'
+TEST_INVALID_APP = 'invalid'

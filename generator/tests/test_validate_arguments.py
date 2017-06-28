@@ -37,3 +37,14 @@ class ValidateArgumentsTestCase(TestCase):
         model = 'Book_'
         self.assertRaises(
             CommandError, self.command.validate_model_name, model)
+
+    def test_valid_app_name(self):
+        """ Check that app name exists """
+        app = settings.TEST_APP
+        self.command.validate_app_name(app)
+
+    def test_invalid_app_name(self):
+        """ Test that error is raised if app does not exist """
+        app = settings.TEST_INVALID_APP
+        self.assertRaises(
+            CommandError, self.command.validate_app_name, app)

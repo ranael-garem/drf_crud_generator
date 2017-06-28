@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
+from importlib import import_module
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.template import Context, Template
@@ -20,10 +21,11 @@ class Command(BaseCommand):
         parser.add_argument('app_name')
 
     def handle(self, model, app_name, *args, **options):
+        self.validate_app_name(app_name)
+        self.validate_model_name(model)
+
         self.model_name = model
         self.app_name = app_name
-
-        self.validate_model_name(model)
 
         app_template = os.path.join(
             settings.BASE_DIR, 'generator', 'management', 'templates')
@@ -31,7 +33,7 @@ class Command(BaseCommand):
 
         context = {
             'name': self.model_name,
-            'author': 'Rana El-Garem'
+            'author': options['author']
         }
 
         self.create_instance(app_template, app_directory, 'model', context)
@@ -82,3 +84,11 @@ class Command(BaseCommand):
             raise CommandError("The model name %s cannot start or end with an "
                                "underscore as it collides with the query lookup syntax"
                                % (name))
+
+    def validate_app_name(self, app_name):
+        """Check that app exists."""
+        try:
+            import_module(app_name)
+        except ImportError:
+            raise CommandError(
+                "App '%s' could not be found. Is it in INSTALLED_APPS?" % app_name)
