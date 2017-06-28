@@ -3,3 +3,4 @@ env/
 htmlcov/
 *.pyc
 .coverage
+db.sqlite3
