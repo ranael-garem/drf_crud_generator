@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django.conf import settings
 from django.core.management.base import CommandError
-from generator.management.commands import crud
+from drf_crud_generator.management.commands import crud
 
 
 class ValidateArgumentsTestCase(TestCase):

@@ -46,7 +46,7 @@ class Command(BaseCommand):
 
     def create_instance(self, instance_type, context):
         """ Creates an instance (model, serializer or view) """
-        import generator
+        import drf_crud_generator as generator
         crud_template_dir = os.path.join(generator.__path__[0], 'management', 'templates')
         app_directory = os.path.join(os.getcwd(), self.app_name)
 
