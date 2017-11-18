@@ -16,9 +16,6 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('model')
         parser.add_argument('app_name')
-        # parser.add_argument(
-        #     '--app', '-a', action='store', dest='app_name',
-        #     help='The app to create files in')
 
     def handle(self, *args, **options):
         model_name = options['model']
@@ -28,6 +25,10 @@ class Command(BaseCommand):
         self.delete_file(app_directory, "model", model_name)
         self.delete_file(app_directory, "serializer", model_name)
         self.delete_file(app_directory, "view", model_name)
+        self.remove_view_from_urls(model_name, app_name)
+        # path = os.path.join(
+        #     settings.TEST_APP, 'urls.py')
+        # os.remove(path)
 
         self.stdout.write(self.style.SUCCESS('Successfully called command'))
 
@@ -43,13 +44,25 @@ class Command(BaseCommand):
         path = os.path.join(
             app_directory, dir_name, '__init__.py')
         target = 'from .%s import %s \n' % (file_name, instance_name)
-        self.remove_from_init(path, target)
+        self.remove_line_from_file(path, target)
         self.stdout.write(self.style.SUCCESS(
             'Successfully deleted %s' % (type)))
 
-    def remove_from_init(self, path, target):
-        """ Remove import from __init__.py """
-        init_file = open(path, "r+")
+    def remove_view_from_urls(self, model_name, app_name):
+        app_directory = os.path.join(os.getcwd(), app_name)
+        urls_path = os.path.join(app_directory, 'urls.py')
+
+        base_name = model_name.lower() + 's'
+        register_line = "router.register('{0}', views.{1}, base_name='{0}')\n".format(
+            base_name, get_instance_name('view', model_name))
+        self.remove_line_from_file(urls_path, register_line)
+
+    def remove_line_from_file(self, path, target):
+        """ Remove line from a file given its path """
+        try:
+            init_file = open(path, "r+")
+        except:
+            return
         lines = init_file.readlines()
         init_file.seek(0)
         for i in lines:
