@@ -1,3 +1,17 @@
+import os
+from django.template import Context, Template
+
+
+def create_file(path_new, path_old, context):
+    """ Creates a new file from path_old to path_new """
+    fp_old = open(path_old, 'r')
+    fp_new = open(path_new, 'w')
+    fp_new.write(Template(fp_old.read()).render(Context(context)))
+    fp_old.close()
+    fp_new.close()
+    return "Successfully created %s" % (path_new)
+
+
 def get_file_name(instance_type, model_name):
     """ Returns file name based on type. """
     if instance_type == "model":
@@ -18,3 +32,14 @@ def get_instance_name(instance_type, model_name):
     elif instance_type == "view":
         instance_name = '%sViewSet' % (model_name)
     return instance_name
+
+
+def write_to_file(path, lines):
+    file = open(path, 'w')
+    for line in lines:
+        file.write(line)
+    file.close()
+
+
+def check_file_exists(path):
+    return os.path.isfile(path)
