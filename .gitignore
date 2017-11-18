@@ -6,3 +6,6 @@ htmlcov/
 db.sqlite3
 main/migrations
 .vscode/
+drf_crud_generator.egg-info
+dist/
+static/
