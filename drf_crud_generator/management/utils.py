@@ -1,4 +1,5 @@
 import os
+import re
 from django.template import Context, Template
 
 
@@ -12,8 +13,14 @@ def create_file(path_new, path_old, context):
     return "Successfully created %s" % (path_new)
 
 
+def convert_camelcase_to_snakecase(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
 def get_file_name(instance_type, model_name):
     """ Returns file name based on type. """
+    model_name = convert_camelcase_to_snakecase(model_name)
     if instance_type == "model":
         file_name = '%s' % (model_name.lower())
     elif instance_type == "serializer":
