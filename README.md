@@ -27,7 +27,7 @@ INSTALLED_APPS = (
 Run the following command, where app is the application to where the classes will be created
 
 ```python
-python manage.py crud {app} {model name}
+python manage.py crud {model name} {app}
 ```
 
 ### Optional argument: Author name
